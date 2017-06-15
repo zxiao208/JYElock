@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+    >
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    android:orientation="vertical"
+    tools:context="com.okhttp3.activity.MainActivity">
+    <Button
+        android:id="@+id/sync_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="同步请求"
+        />
+    <Button
+        android:id="@+id/async_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="异步请求"
+        />
+    <Button
+        android:id="@+id/force_network_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="仅网络"
+        />
+    <Button
+        android:id="@+id/force_cache_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="仅缓存"
+        />
+    <Button
+        android:id="@+id/network_then_cache_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="先网络再缓存"
+        />
+    <Button
+        android:id="@+id/cache_then_network_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="先缓存再网络"
+        />
+    <Button
+        android:id="@+id/ten_second_cache_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="缓存10秒失效"
+        />
+    <Button
+        android:id="@+id/delete_cache_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="清理缓存"
+        />
+
+    <TextView
+        android:id="@+id/fromCacheTV"
+        android:layout_marginTop="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"/>
+
+    <TextView
+        android:id="@+id/resultTV"
+        android:layout_marginTop="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"/>
+</LinearLayout>
+</ScrollView>

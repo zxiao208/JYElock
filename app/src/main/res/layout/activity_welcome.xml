@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.jiayang.jyelock.view.WelcomeActivity"
+    >
+
+    <Button
+        android:id="@+id/httpBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="网络请求示例"/>
+
+    <Button
+        android:id="@+id/uploadImgBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="上传图片示例"/>
+
+    <Button
+        android:id="@+id/uploadFileBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="上传文件示例"/>
+
+    <Button
+        android:id="@+id/downloadBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="下载文件示例"/>
+
+    <Button
+        android:id="@+id/downloadPointBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="断点下载文件示例"/>
+
+</LinearLayout>
