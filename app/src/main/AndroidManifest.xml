@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.jiayang.jyelock">
 
+
     <!-- 添加读写权限 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
@@ -16,6 +17,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <application
         android:name=".base.BaseApplication"
         android:allowBackup="true"
@@ -24,7 +27,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.WelcomeActivity">
+        <activity android:name=".view.PDFReader">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -36,6 +39,13 @@
                 <action android:name="android.intent.action.MainActivity"/>
             </intent-filter>
         </activity>
+
+        <meta-data android:value="594884b19f06fd4ca5000ae2" android:name="UMENG_APPKEY"/>
+        <meta-data android:value="${UMENG_CHANNEL_VALUE}" android:name="UMENG_CHANNEL"/>
+        <meta-data
+            android:name="UMENG_MESSAGE_SECRET"
+            android:value="621ad156ff60722036b519425b9534ec">
+        </meta-data>
     </application>
 
 </manifest>

@@ -2,6 +2,7 @@ package com.jiayang.jyelock.base;
 
 import android.app.Application;
 import android.os.Environment;
+import android.util.Log;
 
 import com.okhttplib.OkHttpUtil;
 import com.okhttplib.annotation.CacheType;
@@ -9,6 +10,8 @@ import com.okhttplib.annotation.Encoding;
 import com.okhttplib.cookie.PersistentCookieJar;
 import com.okhttplib.cookie.cache.SetCookieCache;
 import com.okhttplib.cookie.persistence.SharedPrefsCookiePersistor;
+import com.umeng.message.IUmengRegisterCallback;
+import com.umeng.message.PushAgent;
 
 import java.io.File;
 
@@ -31,6 +34,21 @@ public class BaseApplication extends Application {
         baseApplication = this;
         String downloadFileDir = Environment.getExternalStorageDirectory().getPath()+"/okHttp_download/";
         String cacheDir = Environment.getExternalStorageDirectory().getPath();
+        PushAgent mPushAgent = PushAgent.getInstance(this);
+//注册推送服务，每次调用register方法都会回调该接口
+        mPushAgent.register(new IUmengRegisterCallback() {
+
+            @Override
+            public void onSuccess(String deviceToken) {
+                //注册成功会返回device token
+                Log.d("zhaoxiao",deviceToken);
+            }
+
+            @Override
+            public void onFailure(String s, String s1) {
+
+            }
+        });
         if(getExternalCacheDir() != null){
             //缓存目录，APP卸载后会自动删除缓存数据
             cacheDir = getExternalCacheDir().getPath();

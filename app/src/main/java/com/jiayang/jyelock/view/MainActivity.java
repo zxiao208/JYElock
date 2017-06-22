@@ -9,9 +9,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.jiayang.jyelock.BuildConfig;
 import com.jiayang.jyelock.R;
 import com.jiayang.jyelock.base.BaseActivity;
+import com.jiayang.jyelock.bean.GetKey;
+import com.jiayang.jyelock.bean.Key;
+import com.jiayang.jyelock.bean.Token;
 import com.jiayang.jyelock.bean.UserInfo;
+import com.jiayang.jyelock.util.JsonDataFactory;
 import com.jiayang.jyelock.util.LogUtil;
 import com.jiayang.jyelock.util.ToastUtil;
 import com.okhttplib.HttpInfo;
@@ -19,20 +24,29 @@ import com.okhttplib.OkHttpUtil;
 import com.okhttplib.annotation.CacheType;
 import com.okhttplib.annotation.Encoding;
 import com.okhttplib.annotation.RequestType;
+import com.umeng.message.PushAgent;
+import com.yeeloc.elocsdk.ElocSDK;
+import com.yeeloc.elocsdk.data.Lock;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.OnClick;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MainActivity extends BaseActivity {
 
+
+    public static final String CLIENT_ID = "lPiWsHMvArxp";//自己申请的ID
+    public static final String CLIENT_SECRET = "alaX1EkDFJ8GjTqEmFZEgGNEuCtKURXYS0q9PkSX";//自己申请的Secret
 
     @Bind(R.id.fromCacheTV)
     TextView fromCacheTV;
@@ -54,6 +68,12 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ElocSDK.init(this, CLIENT_ID, CLIENT_SECRET);
+        ElocSDK.setDebug(BuildConfig.DEBUG);
+        String password = "zhaoxiao123";
+        String username ="18622358828";
+        ElocSDK.bindUser(username, password);
     }
 
     @Override
@@ -100,40 +120,52 @@ public class MainActivity extends BaseActivity {
                 tenSecondCache();
                 break;
             case R.id.delete_cache_btn://清理缓存
+                Lock.unlock(lockKey);
             //    deleteCache();
-                getToken();
+                //getToken();
                 break;
         }
     }
 
 
     HashMap hm1 = new HashMap<String,String>();
+    Token token;
+    String tokenStr;
     /**
      * 同步请求：由于不能在UI线程中进行网络请求操作，所以采用子线程方式
-     * post方式的
+     * post方式的  获取token
      */
+    HashMap hm = new HashMap<String,String>();
     private void sync() {
-        hm1.put("client_id","lPiWsHMvArxp");
-        hm1.put("client_secret","alaX1EkDFJ8GjTqEmFZEgGNEuCtKURXYS0q9PkSX");
+        hm.put("grant_type","password");
+        hm.put("client_id","lPiWsHMvArxp");
+        hm.put("client_secret","alaX1EkDFJ8GjTqEmFZEgGNEuCtKURXYS0q9PkSX");
+        hm.put("username","18622358828");
+        hm.put("password","zhaoxiao123");
         new Thread(new Runnable() {
             @Override
             public void run() {
 
                 final HttpInfo info = HttpInfo.Builder()
                         .setRequestType(RequestType.POST)
-                        .setUrl("https://api.yeeloc.com/open-api/client/verify")
-                        .addParams(hm1)
+                        .setUrl("http://192.168.1.119:8080/appclient/portone/prsvforcastrmtype/select")
+                       // .addParams(hm)
                         .setResponseEncoding(Encoding.UTF_8)//设置服务器响应编码
                         .build();
+
                 OkHttpUtil.getDefault(this)
                         .doPostSync(info);
 
                 final String result = info.getRetDetail();
-
+                Log.i("zhaoxiao",result);
+//                token = new Gson().fromJson(result, Token.class);
+//                tokenStr=token.getAccess_token();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         resultTV.setText("同步请求：" + result);
+                        //GSon解析
+//                        LogUtil.d("MainActivity", userInfo.toString());
                         setFromCacheTV(info);
                     }
                 });
@@ -144,7 +176,7 @@ public class MainActivity extends BaseActivity {
 
     /**
      * 异步请求：回调方法可以直接操作UI
-     *   请求用户信息get
+     *   请求用户token
      */
     private void getToken() {
         HashMap hm = new HashMap<String,String>();
@@ -178,18 +210,27 @@ public class MainActivity extends BaseActivity {
        // needDeleteCache(false);
     }
 
+
+
+
     /**
      * 异步请求：回调方法可以直接操作UI
      *   请求用户信息get
      */
+    int a =1;
+    String lockKey;
     private void async() {
+        HashMap hm = new HashMap<String,String>();
+        hm.put("lock_id","-1");
+        hm.put("password_amount","1");
         OkHttpUtil.getDefault(this).doAsync(
                 HttpInfo.Builder()
-                        .setUrl(url)
+                        .setUrl("https://api.yeeloc.com/open-api/lock/password/-1/1")
                         .setRequestType(RequestType.GET)//设置请求方式
-                        .addHead("Authorization","Bearer X1Ewc1tglb9rvOAzweeSmJWYhzqFVWYAukjvbTQJ")//添加头参数
-                        // .addParam("param","test")//添加接口参数
+                        .addHead("Authorization","Bearer"+" "+tokenStr)//添加头参数
+                     //   .addParams(hm)//添加接口参数
                         .build(),
+
                 new com.okhttplib.callback.Callback() {
                     @Override
                     public void onFailure(HttpInfo info) throws IOException {
@@ -200,14 +241,23 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void onSuccess(HttpInfo info) throws IOException {
                         String result = info.getRetDetail();
+                        Log.i("zhaoxiao",result);
+                        Key key;
+                        List<Key> list=JsonDataFactory.jsonToArrayList(result,Key.class);
+
+                        Log.i("zhaoxiao",list.get(0).getPassword_str());
+
+                        lockKey=list.get(0).getPassword_str();
+
+
                         resultTV.setText("异步请求成功：" + result);
                         //GSon解析
-                        UserInfo userInfo = new Gson().fromJson(result, UserInfo.class);
-                        LogUtil.d("MainActivity", userInfo.toString());
-                        setFromCacheTV(info);
+//                        UserInfo userInfo = new Gson().fromJson(result, UserInfo.class);
+//                        LogUtil.d("MainActivity", userInfo.toString());
+//                        setFromCacheTV(info);
                     }
                 });
-                      needDeleteCache(false);
+        needDeleteCache(false);
     }
 
     /**
@@ -372,10 +422,17 @@ public class MainActivity extends BaseActivity {
     //普通的okhttp同步请求数据
     private void CheckDeveloper(){
         mOkHttpClient= new OkHttpClient();
-        Request.Builder requestBuilder = new Request.Builder().url("https://api.yeeloc.com/open-api/user").header("Authorization","Bearer X1Ewc1tglb9rvOAzweeSmJWYhzqFVWYAukjvbTQJ");
+
+        Request.Builder requestBuilder = new Request.Builder()
+                .url("https://api.yeeloc.com/open-api/user")
+                .header("Authorization","Bearer X1Ewc1tglb9rvOAzweeSmJWYhzqFVWYAukjvbTQJ")
+
+                ;
+
         //可以省略，默认是GET请求
         requestBuilder.method("GET",null);
         Request request = requestBuilder.build();
+
         Call mcall= mOkHttpClient.newCall(request);
         mcall.enqueue(new Callback() {
             @Override

@@ -13,6 +13,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import com.jiayang.jyelock.R;
+import com.umeng.analytics.AnalyticsConfig;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,14 +58,26 @@ public abstract class BaseActivity extends AppCompatActivity implements Activity
         super.onCreate(savedInstanceState);
         setContentView(initLayout());
         ButterKnife.bind(this);
+        //umeng加密
+        MobclickAgent.enableEncrypt(true);//6.0.0版本及以后
+        PushAgent.getInstance(this).onAppStart();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onPageStart("SplashScreen"); //统计页面(仅有Activity的应用中SDK自动调用，不需要单独写。"SplashScreen"为页面名称，可自定义)
+        MobclickAgent.onResume(this);
         if(isNeedCheck){
             checkPermissions(needPermissions);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("SplashScreen"); // （仅有Activity的应用中SDK自动调用，不需要单独写）保证 onPageEnd 在onPause 之前调用,因为 onPause 中会保存信息。"SplashScreen"为页面名称，可自定义
+        MobclickAgent.onPause(this);
     }
 
     /**
